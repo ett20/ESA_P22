@@ -19,7 +19,7 @@ library(tufte)
 library(ggplot2)
 library(readxl)
 library(plotly)
-library(reshape2)
+#library(reshape2)
 library(gtools)
 library(MASS)
 library(ggridges)
@@ -332,7 +332,8 @@ ggplot(NULL)+
 # TASK: Read in the properties file by running the chunk "Glorich properties file"
 
 ```{r Glorich properties file, echo=FALSE, include=FALSE}
-Glorich_properties<-read.csv("Glorich_V01_CSV_plus_Shapefiles_2019_05_24/catchment_properties.csv")
+#Glorich_properties<-read.csv("Glorich_V01_CSV_plus_Shapefiles_2019_05_24/catchment_properties.csv")
+Glorich_properties<-readRDS("Glorich_properties.Rda")
 ```
 
 # TASK: Take a look at the properties file by running the chunk "Look at Glorich properties file".
