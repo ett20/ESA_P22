@@ -5,7 +5,6 @@ dependencies:
   - r-base # whatever version
   - r-irkernel
   # and all your other leaf r- dependencies
-  - r-sf
   - r-rmapshaper
   - r-tufte
   - r-ggplot2
@@ -20,3 +19,4 @@ dependencies:
   - r-colorspace
   - r-dplyr
   - r-tidyr
+  - r-sf
