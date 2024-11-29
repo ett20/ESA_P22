@@ -112,6 +112,11 @@ ggplot(NULL)+
   geom_sf(data=Glorich_shape, aes(alpha=1), fill="black", size=0.01)+
   theme(legend.position="none")
 
+plot_ly()%>%
+  add_sf(data=continents, opacity=0.2)%>%
+  add_sf(data=t, color=I("black"), opacity=0.4)
+
+
 ```
 
 # TASK: Calculate the NICB for the GLORICH database.  You can do this by running the chunk "NICB".  Make sure you understand this formula.
