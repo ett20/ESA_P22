@@ -7,7 +7,7 @@ dependencies:
   # and all your other leaf r- dependencies
   - r-rmapshaper
   - r-tufte
-  - r-ggplot2
+  - r-ggplot2_3.4.4
   - r-readxl
   - r-plotly
   - r-reshape2
