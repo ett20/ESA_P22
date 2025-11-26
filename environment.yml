@@ -20,3 +20,4 @@ dependencies:
   - r-dplyr
   - r-tidyr
   - r-sf
+  - r-tint
