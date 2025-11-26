@@ -2,7 +2,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - r-base # whatever version
+  - r-base=4.3.1 # whatever version
   - r-irkernel
   # and all your other leaf r- dependencies
   - r-rmapshaper
