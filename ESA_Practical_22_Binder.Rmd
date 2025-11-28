@@ -19,7 +19,7 @@ library(tufte)
 library(ggplot2)
 library(readxl)
 library(plotly)
-#library(reshape2)
+library(reshape2)
 library(gtools)
 library(MASS)
 library(ggridges)
@@ -48,21 +48,18 @@ When you click the **Knit** button a document will be generated that includes bo
 ```
 \noindent One of the main controls on the composition of terrestrial fresh waters is the rocks through/over which the waters drain. You task in today's practical is to become familiar with the largest available database of natural river waters, and evaluate the lithological control on these waters.
 
-\noindent Note the GLORICH database is **LARGE**. There are measurements of 1.27 million river waters. The data is supplied as three separate files as R data frames.  To enable these files to be read via a web-browser the file size has been reduced for you.  A spreadsheet environment could be used to open this type of file, but some spreadsheet environments will not be able to cope this many lines of data.
+\noindent Note the GLORICH database is **LARGE**. There are measurements of 1.27 million river waters. The data is supplied as three separate files as comma delimited values (**.csv**) format. A spreadsheet environment could be used to open this type of file, but some spreadsheet environments will not be able to cope this many lines of data.
 
 \noindent  This is an opportunity to become more familiar with a coding environment which can be intimidating. All of the coding itself is done for you. All you actually need to do is to run the code (which might be intimidating in itself). We are here to help with this. The snippets of code provided, might serve as **cookbook** examples for the future.
 
 \noindent  DON'T EXPECT TO UNDERSTAND ALL THE CODE IN THIS ONE PRACTICAL.  THAT WOULD BE ANALAGOUS TO TRYING TO LEARN A FOREIGN LANGUAGE IN 2 HOURS.
 
-# This practical will take place on your laptops via a web-browser (hopefully).  Navigate to moodle in a web browser and click on the link to link to P22.  This will open a Binder webpage which will compile into an interface that is identical to the RStudio App.  Some of you will be familiar with this app, but if you have never used if before you will. need to spend a few minutes familiarising yourself with it and making sure you know how to run R.
-
-
+# This practical will take place in the Galson computer lab.  First off, login to Ubuntu. Navigate to moodle in a web browser. Download the **entire folder** called Practical 2. This will download as a zipped or compressed folder. Move this folder to you home directory, and unzip it. This folder contains a series of sub-folders that contain the data base. It also contains a file called **Practical22.Rmd**. Open this file using the RStudio App.
 
 # TASK: Read in the main data base by running the chunk of code "**Read in the GLORICH database"**.
 
 ```{r Read in the GLORICH database, echo=FALSE, include=FALSE}
-#Glorich<-read.csv("Glorich_V01_CSV_plus_Shapefiles_2019_05_24/hydrochemistry.csv")
-Glorich<-readRDS("Glorich.Rda")
+Glorich<-read.csv("Glorich_V01_CSV_plus_Shapefiles_2019_05_24/hydrochemistry.csv")
 dim(Glorich)
 head(Glorich)
 ```
@@ -83,43 +80,42 @@ dim(Glorich)
 
 # TASK: To reduce the file size, select only the columns that will interest us for today's practical by running the chunk of code "**Select cols Glorich"**
 
+```{r Select cols Glorich, echo=FALSE, include=FALSE}
+colnames(Glorich)
+Glorich<-Glorich%>%dplyr::select(STAT_ID,RESULT_DATETIME,SAMPLE_TIME_DESC,SAMPLING_MODE,Ref,pH,HCO3,Ca,Mg,Na,K,SiO2,Cl,SO4,NO3)
+#saveRDS(Glorich, "/Volumes/Red_Kite/edwardtipper/Working/Cambridge UL/Teaching/Part_1B/GSA/Weathering and erosion/Practicals/P2/Glorich.Rda")
+```
 
-\noindent The catchment outlines (i.e., a map) are also provided as part of the GloRICH database in ERSI simple features format (also referred to as shape files). You may have used some of these files if you are familiar with the QGIS (you will learn to use this later in the year) or software (or even Google maps or Google Earth). This is useful to be able to make of where the data is from.
+\noindent The catchment outlines (i.e., a map) are also provided as part of the GloRICH database in ERSI simple features format (also referred to as shape files). You may have used some of these files if you are familiar with the QGIS or software (or even Google maps or Google Earth). This is useful to be able to make of where the data is from.
 
 # TASK:  Read in the ERSI shape files
 
 ```{r Read GLorich shape files, echo=FALSE, include=FALSE}
-#path<-"Shapes_GloRiCh"
-#Glorich_shape <- st_read(dsn=path, layer="Catchments_v1")
-Glorich_shape<-readRDS("Glorich_shape.Rda")
-#Glorich_shape<-Glorich_shape%>%rename("STAT_ID"="Stat_Id")
+path<-"Shapes_GloRiCh"
+Glorich_shape <- st_read(dsn=path, layer="Catchments_v1")
+Glorich_shape<-Glorich_shape%>%rename("STAT_ID"="Stat_Id")
 ```
 
 # TASK: Take a look at the structure of the ERSI "simple features" file by running the chunk below. It is useful to know a little about the structure of ERSI shape files to help understand how GIS works. Ask a question if you want to know more about this type of file. It really helps demystify some of the black box nature of GIS to understand the file structure. Note that the column *STAT_ID* corresponds to the station ID as with the main chemical database file.
 
+# TASK Reduce the resolution of sf files to increase the plotting speed by running the chunk of code "Simplify shape files"
 
+```{r Simplify shape files to make the plotable, echo=FALSE, include=FALSE}
+Glorich_shape<-st_simplify(Glorich_shape, dTolerance = 30000)
+#Glorich_simple<-Glorich_simple%>%distinct(STAT_ID, .keep_all=TRUE)
+```
 
 # TASK: Run the chunk of code "Make Glorich Global Map" to make a global map showing where the data is from.
 
 ```{r Make Glorich Global Map, fig.fullwidth=TRUE, fig.cap="Map showing GLORICH database", out.width = "100%", warning=FALSE, message=FALSE}
 #1) Read in continents from file
-#continents<-st_read("continent-poly/Continents.shp")
-#saveRDS(continents, "continents.Rda")
-continents<-readRDS("continents.Rda")
+continents<-st_read("continent-poly/Continents.shp")
+
 
 ggplot(NULL)+
   geom_sf(data=continents, aes(alpha=0.1), fill="black", size=0.01)+
   geom_sf(data=Glorich_shape, aes(alpha=1), fill="black", size=0.01)+
   theme(legend.position="none")
-
-
-t<-st_transform(st_cast(Glorich_shape%>%filter(!st_is_empty(.)), "MULTIPOLYGON"),
-  crs = st_crs(continents))
-
-plot_ly()%>%
-  add_sf(data=continents, opacity=0.2)%>%
-  add_sf(data=t, color=I("black"), opacity=0.4)
-
 
 ```
 
@@ -341,8 +337,7 @@ ggplot(NULL)+
 # TASK: Read in the properties file by running the chunk "Glorich properties file"
 
 ```{r Glorich properties file, echo=FALSE, include=FALSE}
-#Glorich_properties<-read.csv("Glorich_V01_CSV_plus_Shapefiles_2019_05_24/catchment_properties.csv")
-Glorich_properties<-readRDS("Glorich_properties.Rda")
+Glorich_properties<-read.csv("Glorich_V01_CSV_plus_Shapefiles_2019_05_24/catchment_properties.csv")
 ```
 
 # TASK: Take a look at the properties file by running the chunk "Look at Glorich properties file".
